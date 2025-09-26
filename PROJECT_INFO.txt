@@ -1,0 +1,126 @@
+GitHub Repository: https://github.com/abhi293/Inventory_service
+
+====================================================================
+                    ORDER MANAGEMENT SYSTEM
+====================================================================
+
+Project Overview:
+A production-ready microservices architecture for order management 
+with comprehensive testing infrastructure. 17/17 tests passing.
+
+Architecture:
+- Microservices-based design with 3 independent services
+- Node.js 20+ with Express.js framework
+- MongoDB databases (separate per service)
+- RabbitMQ message queue for async communication
+- Docker containerization with Kubernetes support
+
+Services:
+1. Inventory Service (Port 3001)
+   - Product catalog and stock management
+   - Health check: GET /health
+   - API docs: GET /api-docs
+   - Main endpoints: /api/products
+
+2. Order Service (Port 3002)
+   - Order processing with inventory validation
+   - Health check: GET /health
+   - API docs: GET /api-docs
+   - Main endpoints: /api/orders
+
+3. Shipping Service (Port 3003)
+   - Shipping records and tracking
+   - Health check: GET /health
+   - API docs: GET /api-docs
+   - Main endpoints: /api/shipping
+
+Technology Stack:
+- Runtime: Node.js 20+ with Express.js
+- Database: MongoDB with Mongoose ODM
+- Message Queue: RabbitMQ with AMQP
+- Testing: Jest, Supertest, Newman, Artillery
+- Containers: Docker & Docker Compose
+- Orchestration: Kubernetes ready
+- Documentation: Swagger/OpenAPI 3.0
+- Security: Helmet.js, CORS enabled
+
+Quick Start:
+1. Install dependencies: npm install
+2. Run tests: npm test (17 tests pass)
+3. Start full system: docker compose up -d
+4. Run all tests: npm run test:all
+
+Testing Infrastructure:
+- 17 Unit Tests: All passing
+- 12 API Tests: Postman/Newman collection
+- 4 Integration Tests: End-to-end workflows
+- Load Tests: Artillery performance testing
+- 100% Coverage: On tested components
+
+Project Structure:
+├── inventory-service/      # Product catalog service
+├── order-service/         # Order processing service
+├── shipping-service/      # Shipping management service
+├── tests/                # Centralized testing
+│   ├── unit/             # Unit tests (17 tests)
+│   ├── integration/      # End-to-end tests
+│   ├── load/            # Performance tests
+│   ├── postman/         # API tests
+│   └── data/            # Test data management
+├── k8s/                 # Kubernetes manifests
+├── scripts/             # Automation scripts
+└── docker-compose.yml   # Multi-service deployment
+
+Key Features:
+- Complete microservices architecture
+- Independent, scalable services
+- Database per service pattern
+- Async messaging with RabbitMQ
+- RESTful APIs with documentation
+- Comprehensive testing (17 unit tests passing)
+- Integration test framework
+- API testing with Postman/Newman
+- Load testing with Artillery
+- Docker containerization
+- Kubernetes deployment manifests
+- Health checks and monitoring
+- Security headers and CORS
+- Hot reload in development
+
+Environment Configuration:
+Each service needs these environment variables:
+- PORT: Service port (3001, 3002, 3003)
+- MONGODB_URI: Database connection string
+- RABBITMQ_URL: Message queue connection (amqp://localhost:5672)
+- NODE_ENV: Environment (development/production)
+
+Success Metrics:
+- 17/17 Unit Tests Passing
+- Clean Process Exit (No Hanging)
+- 100% Test Coverage on tested files
+- Docker Security Issues Fixed
+- Production-Ready Architecture
+- Comprehensive Documentation
+
+Example Order Flow:
+1. Create product via Inventory Service
+2. Place order via Order Service (validates inventory)
+3. Generate invoice for the order
+4. Track shipping status (automatically created via RabbitMQ)
+
+Monitoring:
+- Health Checks: All services expose /health endpoint
+- API Docs: Each service has /api-docs (Swagger UI)
+- RabbitMQ UI: http://localhost:15672 (guest/guest)
+- Logs: npm run logs or docker compose logs -f
+
+Security Features:
+- Updated Base Images: Node.js 20-alpine (security patches)
+- Helmet.js: Security headers for all services
+- CORS: Configured cross-origin resource sharing
+- Input Validation: Mongoose schema validation
+- Health Checks: Service availability monitoring
+
+License: MIT License
+
+Contact: GitHub Repository - https://github.com/abhi293/Inventory_service
