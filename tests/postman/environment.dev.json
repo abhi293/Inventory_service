@@ -1,0 +1,36 @@
+{
+  "id": "order-mgmt-dev",
+  "name": "Order Management Development",
+  "values": [
+    {
+      "key": "inventory_base_url",
+      "value": "http://localhost:3001",
+      "enabled": true
+    },
+    {
+      "key": "order_base_url",
+      "value": "http://localhost:3002",
+      "enabled": true
+    },
+    {
+      "key": "shipping_base_url",
+      "value": "http://localhost:3003",
+      "enabled": true
+    },
+    {
+      "key": "product_id",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "key": "order_id",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "key": "tracking_number",
+      "value": "",
+      "enabled": true
+    }
+  ]
+}

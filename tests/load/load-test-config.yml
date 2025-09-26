@@ -1,0 +1,50 @@
+config:
+  target: 'http://localhost:3001'
+  phases:
+    - duration: 30
+      arrivalRate: 5
+      name: "Warm up"
+    - duration: 60
+      arrivalRate: 10
+      name: "Sustained load"
+    - duration: 30
+      arrivalRate: 20
+      name: "Peak load"
+  defaults:
+    headers:
+      Content-Type: 'application/json'
+
+scenarios:
+  - name: "Health Check"
+    weight: 20
+    flow:
+      - get:
+          url: "/health"
+          
+  - name: "Get Products"
+    weight: 40
+    flow:
+      - get:
+          url: "/api/products"
+          
+  - name: "Create Product"
+    weight: 30
+    flow:
+      - post:
+          url: "/api/products"
+          json:
+            name: "Load Test Product {{ $randomString() }}"
+            description: "Product created during load test"
+            price: "{{ $randomInt(10, 1000) }}.99"
+            quantity: "{{ $randomInt(1, 100) }}"
+            sku: "LOAD-{{ $randomString() }}"
+            
+  - name: "Check Availability"
+    weight: 10
+    flow:
+      - post:
+          url: "/api/products/check-availability"
+          json:
+            items:
+              - productId: "507f1f77bcf86cd799439011"
+                quantity: 1

@@ -1,0 +1,425 @@
+{
+  "info": {
+    "name": "Order Management System API Tests",
+    "description": "Complete API test collection for the Order Management System",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "inventory_base_url",
+      "value": "http://localhost:3001"
+    },
+    {
+      "key": "order_base_url", 
+      "value": "http://localhost:3002"
+    },
+    {
+      "key": "shipping_base_url",
+      "value": "http://localhost:3003"
+    },
+    {
+      "key": "product_id",
+      "value": ""
+    },
+    {
+      "key": "order_id",
+      "value": ""
+    },
+    {
+      "key": "tracking_number",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Inventory Service",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{inventory_base_url}}/health",
+              "host": ["{{inventory_base_url}}"],
+              "path": ["health"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Health check returns 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Service is healthy', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.status).to.eql('healthy');",
+                  "    pm.expect(responseJson.service).to.eql('inventory-service');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Product",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Laptop\",\n  \"description\": \"High-performance laptop for testing\",\n  \"price\": 1299.99,\n  \"quantity\": 10,\n  \"sku\": \"TEST-LAP-001\"\n}"
+            },
+            "url": {
+              "raw": "{{inventory_base_url}}/api/products",
+              "host": ["{{inventory_base_url}}"],
+              "path": ["api", "products"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Product created successfully', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Product has correct properties', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.name).to.eql('Test Laptop');",
+                  "    pm.expect(responseJson.price).to.eql(1299.99);",
+                  "    pm.expect(responseJson._id).to.exist;",
+                  "    pm.collectionVariables.set('product_id', responseJson._id);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get All Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{inventory_base_url}}/api/products",
+              "host": ["{{inventory_base_url}}"],
+              "path": ["api", "products"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Get products returns 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response is an array', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Check Availability",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"productId\": \"{{product_id}}\",\n      \"quantity\": 2\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{inventory_base_url}}/api/products/check-availability",
+              "host": ["{{inventory_base_url}}"],
+              "path": ["api", "products", "check-availability"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Availability check returns 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Products are available', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.available).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Order Service",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{order_base_url}}/health",
+              "host": ["{{order_base_url}}"],
+              "path": ["health"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Health check returns 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Service is healthy', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.status).to.eql('healthy');",
+                  "    pm.expect(responseJson.service).to.eql('order-service');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": \"CUST001\",\n  \"customerName\": \"John Doe\",\n  \"customerEmail\": \"john.doe@email.com\",\n  \"items\": [\n    {\n      \"productId\": \"{{product_id}}\",\n      \"quantity\": 2\n    }\n  ],\n  \"shippingAddress\": {\n    \"street\": \"123 Main St\",\n    \"city\": \"Anytown\",\n    \"state\": \"NY\",\n    \"zipCode\": \"12345\",\n    \"country\": \"USA\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{order_base_url}}/api/orders",
+              "host": ["{{order_base_url}}"],
+              "path": ["api", "orders"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Order created successfully', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Order has correct properties', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.orderId).to.exist;",
+                  "    pm.expect(responseJson.status).to.eql('confirmed');",
+                  "    pm.expect(responseJson.totalAmount).to.be.a('number');",
+                  "    pm.collectionVariables.set('order_id', responseJson.orderId);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Order",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{order_base_url}}/api/orders/{{order_id}}",
+              "host": ["{{order_base_url}}"],
+              "path": ["api", "orders", "{{order_id}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Get order returns 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Order details are correct', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.orderId).to.eql(pm.collectionVariables.get('order_id'));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Generate Invoice",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{order_base_url}}/api/orders/{{order_id}}/invoice",
+              "host": ["{{order_base_url}}"],
+              "path": ["api", "orders", "{{order_id}}", "invoice"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Invoice generated successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Invoice has correct structure', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.invoiceId).to.exist;",
+                  "    pm.expect(responseJson.orderId).to.eql(pm.collectionVariables.get('order_id'));",
+                  "    pm.expect(responseJson.total).to.be.a('number');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Shipping Service",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{shipping_base_url}}/health",
+              "host": ["{{shipping_base_url}}"],
+              "path": ["health"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Health check returns 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Service is healthy', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.status).to.eql('healthy');",
+                  "    pm.expect(responseJson.service).to.eql('shipping-service');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Shipping by Order ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{shipping_base_url}}/api/shipping/order/{{order_id}}",
+              "host": ["{{shipping_base_url}}"],
+              "path": ["api", "shipping", "order", "{{order_id}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Shipping record found or processing', function () {",
+                  "    // May return 200 or 404 depending on message queue processing speed",
+                  "    pm.expect([200, 404]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    pm.test('Shipping details are correct', function () {",
+                  "        const responseJson = pm.response.json();",
+                  "        pm.expect(responseJson.orderId).to.eql(pm.collectionVariables.get('order_id'));",
+                  "        pm.expect(responseJson.trackingNumber).to.exist;",
+                  "        pm.collectionVariables.set('tracking_number', responseJson.trackingNumber);",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Track Shipment",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{shipping_base_url}}/api/shipping/track/{{tracking_number}}",
+              "host": ["{{shipping_base_url}}"],
+              "path": ["api", "shipping", "track", "{{tracking_number}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Skip this test if no tracking number is available",
+                  "if (!pm.collectionVariables.get('tracking_number')) {",
+                  "    console.log('Skipping tracking test - no tracking number available');",
+                  "    pm.execution.skipRequest();",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Tracking info retrieved successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Tracking info has timeline', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.timeline).to.be.an('array');",
+                  "    pm.expect(responseJson.timeline.length).to.be.greaterThan(0);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

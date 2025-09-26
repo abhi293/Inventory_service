@@ -1,0 +1,19 @@
+{
+  "name": "order-management-integration-tests",
+  "version": "1.0.0",
+  "description": "Integration tests for Order Management System",
+  "scripts": {
+    "test": "jest --detectOpenHandles --forceExit",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  },
+  "devDependencies": {
+    "jest": "^29.6.4",
+    "axios": "^1.5.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testTimeout": 120000,
+    "verbose": true
+  }
+}

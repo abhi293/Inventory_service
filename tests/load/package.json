@@ -1,0 +1,17 @@
+{
+  "name": "load-testing",
+  "version": "1.0.0",
+  "description": "Load testing configuration for Order Management System",
+  "scripts": {
+    "install-artillery": "npm install -g artillery",
+    "test:inventory": "artillery run inventory-load-test.yml",
+    "test:orders": "artillery run order-load-test.yml", 
+    "test:shipping": "artillery run shipping-load-test.yml",
+    "test:all": "npm run test:inventory && npm run test:orders && npm run test:shipping",
+    "test:report": "artillery run inventory-load-test.yml --output inventory-report.json && artillery report inventory-report.json"
+  },
+  "devDependencies": {
+    "artillery": "^2.0.0",
+    "axios": "^1.5.0"
+  }
+}

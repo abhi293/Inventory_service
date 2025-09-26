@@ -1,0 +1,27 @@
+config:
+  target: 'http://localhost:3003'
+  phases:
+    - duration: 60
+      arrivalRate: 8
+      name: "Warm up"
+    - duration: 120
+      arrivalRate: 20
+      name: "Sustained load"
+    - duration: 60
+      arrivalRate: 35
+      name: "Peak load"
+
+scenarios:
+  - name: "Shipping Service Load Test"
+    weight: 100
+    flow:
+      - get:
+          url: "/health"
+      - get:
+          url: "/api/shipping"
+      # Note: Shipping records are created automatically via message queue
+      # So we mainly test read operations in load testing
+      - loop:
+          - get:
+              url: "/api/shipping"
+          - think: 1

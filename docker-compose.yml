@@ -1,0 +1,128 @@
+version: '3.8'
+
+services:
+  # MongoDB databases
+  mongodb-inventory:
+    image: mongo:6.0
+    container_name: mongodb-inventory
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: inventory
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-inventory-data:/data/db
+    networks:
+      - order-management-network
+
+  mongodb-orders:
+    image: mongo:6.0
+    container_name: mongodb-orders
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: orders
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongodb-orders-data:/data/db
+    networks:
+      - order-management-network
+
+  mongodb-shipping:
+    image: mongo:6.0
+    container_name: mongodb-shipping
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: shipping
+    ports:
+      - "27019:27017"
+    volumes:
+      - mongodb-shipping-data:/data/db
+    networks:
+      - order-management-network
+
+  # RabbitMQ
+  rabbitmq:
+    image: rabbitmq:3.12-management
+    container_name: rabbitmq
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin123
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - order-management-network
+
+  # Inventory Service
+  inventory-service:
+    build:
+      context: ./inventory-service
+      dockerfile: Dockerfile
+    container_name: inventory-service
+    restart: unless-stopped
+    environment:
+      PORT: 3001
+      MONGODB_URI: mongodb://mongodb-inventory:27017/inventory
+      NODE_ENV: production
+    ports:
+      - "3001:3001"
+    depends_on:
+      - mongodb-inventory
+    networks:
+      - order-management-network
+
+  # Order Service
+  order-service:
+    build:
+      context: ./order-service
+      dockerfile: Dockerfile
+    container_name: order-service
+    restart: unless-stopped
+    environment:
+      PORT: 3002
+      MONGODB_URI: mongodb://mongodb-orders:27017/orders
+      INVENTORY_SERVICE_URL: http://inventory-service:3001
+      RABBITMQ_URL: amqp://admin:admin123@rabbitmq:5672
+      NODE_ENV: production
+    ports:
+      - "3002:3002"
+    depends_on:
+      - mongodb-orders
+      - rabbitmq
+      - inventory-service
+    networks:
+      - order-management-network
+
+  # Shipping Service
+  shipping-service:
+    build:
+      context: ./shipping-service
+      dockerfile: Dockerfile
+    container_name: shipping-service
+    restart: unless-stopped
+    environment:
+      PORT: 3003
+      MONGODB_URI: mongodb://mongodb-shipping:27017/shipping
+      RABBITMQ_URL: amqp://admin:admin123@rabbitmq:5672
+      NODE_ENV: production
+    ports:
+      - "3003:3003"
+    depends_on:
+      - mongodb-shipping
+      - rabbitmq
+    networks:
+      - order-management-network
+
+volumes:
+  mongodb-inventory-data:
+  mongodb-orders-data:
+  mongodb-shipping-data:
+  rabbitmq-data:
+
+networks:
+  order-management-network:
+    driver: bridge

@@ -1,0 +1,93 @@
+{
+  "name": "order-management-system",
+  "version": "1.0.0",
+  "description": "Microservices-based Order Management System with Inventory, Order, and Shipping services",
+  "main": "index.js",
+  "scripts": {
+    "start": "docker-compose up",
+    "start:dev": "docker-compose -f docker-compose.yml -f docker-compose.dev.yml up",
+    "stop": "docker-compose down",
+    "build": "docker-compose build",
+    "test": "jest --testPathPattern=\"(tests/unit|inventory-service.*product\\.model).*\\.test\\.js\" --forceExit --detectOpenHandles",
+    "test:unit": "jest --testPathPattern=\"(tests/unit|inventory-service.*product\\.model).*\\.test\\.js\" --verbose --forceExit --detectOpenHandles",
+    "test:all-services": "jest --testPathPattern=\"(inventory-service|order-service|shipping-service).*\\.test\\.js\" --verbose --forceExit --detectOpenHandles",
+    "test:integration": "jest --testPathPattern=tests/integration --verbose --runInBand",
+    "test:load": "artillery run tests/load/load-test-config.yml",
+    "test:api": "node tests/postman/run-api-tests.js",
+    "test:all": "node tests/test-runner.js all",
+    "test:setup": "node tests/data/setup-test-environment.js setup",
+    "test:reset": "node tests/data/setup-test-environment.js reset",
+    "logs": "docker-compose logs -f",
+    "logs:inventory": "docker-compose logs -f inventory-service",
+    "logs:order": "docker-compose logs -f order-service",
+    "logs:shipping": "docker-compose logs -f shipping-service",
+    "clean": "docker-compose down -v --remove-orphans && docker system prune -f",
+    "services:start": "scripts\\start-services.bat",
+    "services:stop": "docker-compose down",
+    "dev:inventory": "cd inventory-service && npm run dev",
+    "dev:order": "cd order-service && npm run dev",
+    "dev:shipping": "cd shipping-service && npm run dev"
+  },
+  "keywords": [
+    "microservices",
+    "order-management",
+    "inventory",
+    "shipping",
+    "nodejs",
+    "express",
+    "mongodb",
+    "rabbitmq",
+    "docker",
+    "kubernetes"
+  ],
+  "author": "Order Management System Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "^29.5.8",
+    "artillery": "^1.7.9",
+    "axios": "^1.6.0",
+    "jest": "^29.7.0",
+    "newman": "^6.0.0",
+    "newman-reporter-htmlextra": "^1.23.1",
+    "supertest": "^6.3.3"
+  },
+  "dependencies": {
+    "amqplib": "^0.10.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^4.18.2",
+    "helmet": "^7.1.0",
+    "mongoose": "^8.0.0",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.0",
+    "uuid": "^9.0.1"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "collectCoverage": true,
+    "coverageDirectory": "tests/reports/coverage",
+    "coverageReporters": [
+      "text",
+      "lcov",
+      "html"
+    ],
+    "testMatch": [
+      "**/tests/**/*.test.js"
+    ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/tests/setup/jest.setup.js"
+    ]
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/company/order-management-system.git"
+  },
+  "bugs": {
+    "url": "https://github.com/company/order-management-system/issues"
+  },
+  "homepage": "https://github.com/company/order-management-system#readme"
+}

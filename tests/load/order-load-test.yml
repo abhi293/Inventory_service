@@ -1,0 +1,41 @@
+config:
+  target: 'http://localhost:3002'
+  phases:
+    - duration: 60
+      arrivalRate: 5
+      name: "Warm up"
+    - duration: 120
+      arrivalRate: 15
+      name: "Sustained load"
+    - duration: 60
+      arrivalRate: 25
+      name: "Peak load"
+  processor: "./order-processor.js"
+
+scenarios:
+  - name: "Order Service Load Test"
+    weight: 100
+    flow:
+      - get:
+          url: "/health"
+      - function: "createTestProducts"
+      - post:
+          url: "/api/orders"
+          json:
+            customerId: "LOAD{{ $randomInt(1000, 9999) }}"
+            customerName: "Load Test Customer {{ $randomInt(1, 1000) }}"
+            customerEmail: "loadtest{{ $randomInt(1, 1000) }}@example.com"
+            items: "{{ items }}"
+            shippingAddress:
+              street: "{{ $randomInt(1, 9999) }} Load Test St"
+              city: "Test City"
+              state: "TS" 
+              zipCode: "{{ $randomInt(10000, 99999) }}"
+              country: "Test Country"
+          capture:
+            - json: ".orderId"
+              as: "orderId"
+      - get:
+          url: "/api/orders/{{ orderId }}"
+      - get:
+          url: "/api/orders/{{ orderId }}/invoice"
